@@ -1,60 +1,61 @@
 package problems
 
 import (
+	"context"
 	"fmt"
 	"math/rand/v2"
 	"strconv"
+	"sync"
 	"time"
 )
 
-func Start(duration float64) {
+func Start(d int) {
 	// Example to run producer-consumer
-	start := time.Now()
-	done := make(chan struct{})
+
+	var wg sync.WaitGroup
+
+	c := context.Background()
+
+	ctx, _ := context.WithDeadline(c, time.Now().Add(time.Second*time.Duration(d)))
+
 	fn := func() any {
-		return strconv.QuoteRuneToASCII(rune(rand.IntN(120)))
+		time.Sleep(time.Second / 2)
+		return strconv.QuoteRuneToASCII(rune(rand.IntN(118)))
 	}
 
-	stream := Producer(done, fn)
-	Consumer(done, stream)
-	for {
-		since := time.Since(start)
-		if since.Seconds() > duration {
-			close(done)
-			time.Sleep(time.Second)
-			return
-		}
-	}
+	stream := Producer(ctx, &wg, fn)
+	Consumer(ctx, &wg, stream)
+	wg.Wait()
 }
 
-func Producer[T any](done <-chan struct{}, fn func() T) <-chan T {
+func Producer[T any](ctx context.Context, wg *sync.WaitGroup, fn func() T) <-chan T {
 	stream := make(chan T)
-	go func() {
+	(*wg).Go(func() {
 		defer close(stream)
 		for {
-			time.Sleep(time.Second * 1 / 2)
 			select {
-			case <-done:
-				fmt.Println("Producer Closing")
+			case <-ctx.Done():
+				fmt.Println("Producer Closing : ", ctx.Err().Error())
 				return
 			case stream <- fn():
 			}
 		}
-	}()
+	})
 
 	return stream
 }
 
-func Consumer[T any](done <-chan struct{}, stream <-chan T) {
-	go func() {
+func Consumer[T any](ctx context.Context, wg *sync.WaitGroup, stream <-chan T) {
+	(*wg).Go(func() {
 		for {
 			select {
-			case <-done:
-				fmt.Println("Consumer Closing")
+			case <-ctx.Done():
+				fmt.Println()
+				fmt.Println("Consumer Closing : ", ctx.Err().Error())
 				return
 			case num := <-stream:
-				fmt.Println(num)
+				fmt.Print(num)
 			}
 		}
-	}()
+	})
 }
