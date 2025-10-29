@@ -1,4 +1,4 @@
-module dsa
+module practise
 
 go 1.25.1
 

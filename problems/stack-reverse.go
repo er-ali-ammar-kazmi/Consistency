@@ -1,6 +1,6 @@
 package problems
 
-import "dsa/structure"
+import "practise/structure"
 
 func StackReverse[T any](stack *structure.Stack[T]) {
 	if stack.IsEmpty() {

@@ -1,6 +1,6 @@
 package problems
 
-import algorithms "dsa/algorithms"
+import algorithms "practise/algorithms"
 
 func WaysOfAnagrams(source, target string) int {
 	// Total ways we could form target string from subset of source string
