@@ -1,6 +1,6 @@
 package app
 
-type Calc interface {
+type Calculator interface {
 	Addition(a, b float64) float64
 	Subtraction(a, b float64) float64
 	Multiplication(a, b float64) float64
@@ -15,7 +15,7 @@ type RowCalci struct {
 	Cacl Calci
 }
 
-func Calculator() Calci {
+func NewCalculator() Calci {
 	return Calci{}
 }
 

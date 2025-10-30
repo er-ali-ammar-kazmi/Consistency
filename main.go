@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "practise/problems"
 
+func main() {
+	problems.Start(2)
 }

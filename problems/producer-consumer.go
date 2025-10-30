@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand/v2"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -14,17 +13,17 @@ func Start(d int) {
 
 	var wg sync.WaitGroup
 
-	c := context.Background()
-
-	ctx, _ := context.WithDeadline(c, time.Now().Add(time.Second*time.Duration(d)))
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*time.Duration(d)))
+	defer cancel()
 
 	fn := func() any {
 		time.Sleep(time.Second / 2)
-		return strconv.QuoteRuneToASCII(rune(rand.IntN(118)))
+		return string(rune(rand.IntN(118)))
 	}
 
 	stream := Producer(ctx, &wg, fn)
 	Consumer(ctx, &wg, stream)
+
 	wg.Wait()
 }
 
@@ -54,7 +53,7 @@ func Consumer[T any](ctx context.Context, wg *sync.WaitGroup, stream <-chan T) {
 				fmt.Println("Consumer Closing : ", ctx.Err().Error())
 				return
 			case num := <-stream:
-				fmt.Print(num)
+				fmt.Print(num, " ")
 			}
 		}
 	})
