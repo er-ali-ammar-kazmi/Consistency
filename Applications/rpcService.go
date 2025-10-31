@@ -16,6 +16,7 @@ import (
 // Adapter implements the GRPCPort interface
 type Adapter struct {
 	calci Calculator
+	protobuf.UnimplementedArithmeticServiceServer
 }
 
 // NewAdapter creates a new Adapter

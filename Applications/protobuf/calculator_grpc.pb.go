@@ -92,7 +92,7 @@ type ArithmeticServiceServer interface {
 	GetSubtraction(context.Context, *Operators) (*Msg, error)
 	GetMultiplication(context.Context, *Operators) (*Msg, error)
 	GetDivision(context.Context, *Operators) (*Msg, error)
-	// mustEmbedUnimplementedArithmeticServiceServer()
+	mustEmbedUnimplementedArithmeticServiceServer()
 }
 
 // UnimplementedArithmeticServiceServer must be embedded to have
