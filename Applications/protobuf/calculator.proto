@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "applications/protobuf";
+
+message msg {
+    string value = 1;
+}
+
+message operators {
+    float a = 1;
+    float b = 2;
+}
+
+service arithmeticService{
+    rpc GetAddition(operators) returns (msg);
+	rpc GetSubtraction(operators) returns (msg);
+	rpc GetMultiplication(operators) returns (msg);
+	rpc GetDivision(operators) returns (msg);
+}

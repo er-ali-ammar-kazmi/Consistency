@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package proto;
-
-option go_package = "./protobuf";
-
-message msg {
-    string value = 1;
-}
