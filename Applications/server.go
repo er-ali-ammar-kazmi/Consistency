@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	protobuf "practise/applications/protobuf"
 	"time"
 
@@ -16,7 +17,7 @@ func StartGrpcCalculatorServer() {
 
 	listen, err := net.Listen("tcp4", ":9000")
 	if err != nil {
-		log.Fatalf("failed to listen on port 9000: %v", err)
+		log.Fatalf("failed to listen on port 9000: %v", err.Error())
 	}
 
 	grpcService := NewGrpcApp()
@@ -26,6 +27,17 @@ func StartGrpcCalculatorServer() {
 	log.Println("Calculator App serving on gRPC server over address: grpc://localhost:9000")
 	if err := grpcServer.Serve(listen); err != nil {
 		log.Fatalf("failed to serve gRPC server over port 9000: %v", err)
+	}
+}
+
+func StartRestCalculatorServer() {
+
+	restApp := NewRestApp()
+	http.HandleFunc("/GetAddition", restApp.GetAddition)
+
+	log.Println("Calculator App serving on Rest server over address: http://localhost:8000")
+	if err := http.ListenAndServe(":8000", nil); err != nil {
+		log.Fatalf("failed to serve gRPC server over port 8000: %v", err)
 	}
 }
 
