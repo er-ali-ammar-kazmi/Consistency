@@ -2,9 +2,32 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"net"
+	protobuf "practise/applications/protobuf"
 	"time"
+
+	"google.golang.org/grpc"
 )
+
+// Run registers the ArithmeticServiceServer to a grpcServer and serves on
+// the specified port
+func StartGrpcCalculatorServer() {
+
+	listen, err := net.Listen("tcp4", ":9000")
+	if err != nil {
+		log.Fatalf("failed to listen on port 9000: %v", err)
+	}
+
+	grpcService := NewGrpcApp()
+	grpcServer := grpc.NewServer()
+	protobuf.RegisterArithmeticServiceServer(grpcServer, grpcService)
+
+	log.Println("Calculator App serving on gRPC server over address: grpc://localhost:9000")
+	if err := grpcServer.Serve(listen); err != nil {
+		log.Fatalf("failed to serve gRPC server over port 9000: %v", err)
+	}
+}
 
 func PingOne(domain string, port string) {
 

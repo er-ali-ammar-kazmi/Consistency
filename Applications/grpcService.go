@@ -3,29 +3,26 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
-	"net"
 
 	protobuf "practise/applications/protobuf"
 
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-// Adapter implements the GRPCPort interface
-type Adapter struct {
+// GrpcApp implements the GRPC interface
+type GrpcApp struct {
 	calci Calculator
 	protobuf.UnimplementedArithmeticServiceServer
 }
 
-// NewAdapter creates a new Adapter
-func NewAdapter(app Calculator) *Adapter {
-	return &Adapter{calci: app}
+// NewGrpcApp creates a new GrpcApp
+func NewGrpcApp() *GrpcApp {
+	return &GrpcApp{calci: Calci{}}
 }
 
 // GetAddition gets the result of adding Operators a and b
-func (grpcService Adapter) GetAddition(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
+func (grpcService GrpcApp) GetAddition(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
 	ans := &protobuf.Msg{}
 
 	if req.GetA() == 0 || req.GetB() == 0 {
@@ -42,7 +39,7 @@ func (grpcService Adapter) GetAddition(ctx context.Context, req *protobuf.Operat
 }
 
 // GetSubtraction gets the result of subtracting Operators a and b
-func (grpcService Adapter) GetSubtraction(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
+func (grpcService GrpcApp) GetSubtraction(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
 
 	ans := &protobuf.Msg{}
 
@@ -60,7 +57,7 @@ func (grpcService Adapter) GetSubtraction(ctx context.Context, req *protobuf.Ope
 }
 
 // GetMultiplication gets the result of multiplying Operators a and b
-func (grpcService Adapter) GetMultiplication(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
+func (grpcService GrpcApp) GetMultiplication(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
 
 	ans := &protobuf.Msg{}
 
@@ -78,7 +75,7 @@ func (grpcService Adapter) GetMultiplication(ctx context.Context, req *protobuf.
 }
 
 // GetDivision gets the result of dividing Operators a and b
-func (grpcService Adapter) GetDivision(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
+func (grpcService GrpcApp) GetDivision(ctx context.Context, req *protobuf.Operators) (*protobuf.Msg, error) {
 
 	ans := &protobuf.Msg{}
 
@@ -93,21 +90,4 @@ func (grpcService Adapter) GetDivision(ctx context.Context, req *protobuf.Operat
 	}
 
 	return ans, nil
-}
-
-// Run registers the ArithmeticServiceServer to a grpcServer and serves on
-// the specified port
-func (grpcService Adapter) Run() {
-
-	listen, err := net.Listen("tcp", ":9000")
-	if err != nil {
-		log.Fatalf("failed to listen on port 9000: %v", err)
-	}
-
-	grpcServer := grpc.NewServer()
-	protobuf.RegisterArithmeticServiceServer(grpcServer, grpcService)
-
-	if err := grpcServer.Serve(listen); err != nil {
-		log.Fatalf("failed to serve gRPC server over port 9000: %v", err)
-	}
 }

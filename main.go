@@ -1,7 +1,7 @@
 package main
 
-import "practise/problems"
+import app "practise/applications"
 
 func main() {
-	problems.Start(2)
+	app.StartGrpcCalculatorServer()
 }
