@@ -1,6 +1,12 @@
 package main
 
+import (
+	app "practise/applications"
+)
+
 func main() {
-	// app.StartGrpcCalculatorServer()
-	// app.StartRestCalculatorServer()
+	db := app.DbService()
+	db.ConnectSqlite()
+	defer db.CloseSqlite()
+	db.Run()
 }
