@@ -18,7 +18,7 @@ type GrpcApp struct {
 
 // NewGrpcApp creates a new GrpcApp
 func NewGrpcApp() *GrpcApp {
-	return &GrpcApp{calci: Calci{}}
+	return &GrpcApp{calci: NewCalculator()}
 }
 
 // GetAddition gets the result of adding Operators a and b

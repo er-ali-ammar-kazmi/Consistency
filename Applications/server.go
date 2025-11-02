@@ -34,6 +34,9 @@ func StartRestCalculatorServer() {
 
 	restApp := NewRestApp()
 	http.HandleFunc("/GetAddition", restApp.GetAddition)
+	http.HandleFunc("/GetSubtraction", restApp.GetSubtraction)
+	http.HandleFunc("/GetMultiplication", restApp.GetMultiplication)
+	http.HandleFunc("/GetDivision", restApp.GetDivision)
 
 	log.Println("Calculator App serving on Rest server over address: http://localhost:8000")
 	if err := http.ListenAndServe(":8000", nil); err != nil {
