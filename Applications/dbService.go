@@ -10,46 +10,31 @@ import (
 
 var DB *gorm.DB
 
-type custom interface {
-	User | Blog | Role | Address
-}
-
-type CRUD[T custom] interface {
-	Create() (T, error)
-	Update(int32) (T, error)
-	Delete(int32) (T, error)
-	RetrieveOne(int32) (T, error)
-	RetrieveAll() ([]T, error)
-}
-
 type User struct {
-	gorm.Model
-	Id      uint   `gorm:"id; primary key; autoIncrement" json:"id"`
-	Name    string `gorm:"name; index" json:"name"`
-	Email   string `gorm:"email" json:"email"`
-	Blogs   []Blog
-	Address Address
-	Roles   []Role `gorm:"many2many:users_roles"`
+	Id      uint    `gorm:"id;primarykey;autoIncrement" json:"id"`
+	Name    string  `gorm:"name;size:50;not null; index" json:"name"`
+	Email   string  `gorm:"email;notnull;unique" json:"email"`
+	Blogs   []Blog  `json:"blogs"`
+	Address Address `json:"address"`
+	Roles   []Role  `gorm:"many2many:users_roles" json:"roles"`
 }
 
 type Blog struct {
-	Id      uint   `gorm:"id; primary key; autoIncrement" json:"id"`
-	Title   string `gorm:"title; index" json:"title"`
-	Content string `gorm:"content" json:"content"`
-	UserId  uint
+	Id      uint   `gorm:"id;primarykey;autoIncrement" json:"id"`
+	Title   string `gorm:"title;size:255;notnull;index" json:"title"`
+	Content string `gorm:"content;type:text;notnull" json:"content"`
+	UserId  uint   `json:"user_id"`
 }
 
 type Address struct {
-	Id          uint   `gorm:"id; primary key; autoIncrement" json:"id"`
+	Id          uint   `gorm:"id;primarykey;autoIncrement" json:"id"`
 	PinCode     uint   `gorm:"pincode" json:"pincode"`
-	Street      string `gorm:"street" json:"street"`
 	HomeAddress string `gorm:"address" json:"address"`
-	UserId      uint
+	UserId      uint   `json:"user_id"`
 }
 
 type Role struct {
-	Id   uint   `gorm:"id; primary key; autoIncrement" json:"id"`
-	Role string `gorm:"role" json:"role"`
+	Role string `gorm:"role;primarykey;size:25" json:"role"`
 }
 
 type dbService struct{}
@@ -67,7 +52,19 @@ func (r dbService) ConnectSqlite() {
 		fmt.Printf("Error: %v", err.Error())
 	}
 
-	conn.AutoMigrate(&Blog{}, &User{}, &Address{}, &Role{})
+	db := conn.Migrator()
+	if !db.HasTable(&User{}) {
+		db.CreateTable(&User{})
+	}
+	if !db.HasTable(&Blog{}) {
+		db.CreateTable(&Blog{})
+	}
+	if !db.HasTable(&Address{}) {
+		db.CreateTable(&Address{})
+	}
+	if !db.HasTable(&Role{}) {
+		db.CreateTable(&Role{})
+	}
 
 	DB = conn
 	fmt.Println("Connection with SqliteDataBase Initialized!")
@@ -84,6 +81,157 @@ func (r dbService) CloseSqlite() {
 	fmt.Println("Connection with SqliteDataBase Closed!")
 }
 
-func (db dbService) Run() {
-	fmt.Println("Started!")
+func (r dbService) InsertUser(record User) User {
+	result := DB.Create(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveUser(id uint) User {
+	var record User
+	result := DB.Preload("Blogs").Preload("Address").Preload("Roles").First(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveAllUsers() []User {
+	var record []User
+	result := DB.Preload("Blogs").Preload("Address").Preload("Roles").Find(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) UpdateUser(id uint, input User) User {
+	result := DB.Save(input)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return input
+}
+
+func (r dbService) DeleteUser(id uint) User {
+	var record User
+	result := DB.Delete(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) InsertBlog(record Blog) Blog {
+	result := DB.Create(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveBlog(id uint) Blog {
+	var record Blog
+	result := DB.First(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveAllBlogs() []Blog {
+	var record []Blog
+	result := DB.Find(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) UpdateBlog(id uint, input Blog) Blog {
+	result := DB.Save(input)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return input
+}
+
+func (r dbService) DeleteBlog(id uint) Blog {
+	var record Blog
+	result := DB.Delete(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) InsertAddress(record Address) Address {
+	result := DB.Create(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveAddress(id uint) Address {
+	var record Address
+	result := DB.First(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) UpdateAddress(id uint, input Address) Address {
+	result := DB.Save(input)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return input
+}
+
+func (r dbService) DeleteAddress(id uint) Address {
+	var record Address
+	result := DB.Delete(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) InsertRole(record Role) Role {
+	result := DB.Create(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveRole(id uint) Role {
+	var record Role
+	result := DB.First(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) RetrieveAllRoles() []Role {
+	var record []Role
+	result := DB.Find(&record)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
+}
+
+func (r dbService) DeleteRole(id uint) Role {
+	var record Role
+	result := DB.Delete(&record, id)
+	if result.Error != nil {
+		fmt.Println("Error: ", result.Error.Error())
+	}
+	return record
 }
