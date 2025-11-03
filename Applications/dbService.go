@@ -2,6 +2,8 @@ package app
 
 import (
 	"fmt"
+	"net/http"
+	"practise/applications/util"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -145,9 +147,9 @@ func (r dbService) RetrieveBlog(id uint) (Blog, error) {
 	return record, nil
 }
 
-func (r dbService) RetrieveAllBlogs() ([]Blog, error) {
+func (r dbService) RetrieveAllBlogs(req *http.Request) ([]Blog, error) {
 	var records []Blog
-	result := DB.Find(&records)
+	result := DB.Scopes(util.Paginate(req)).Find(&records)
 	if result.Error != nil {
 		return records, result.Error
 	}
