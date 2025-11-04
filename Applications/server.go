@@ -11,8 +11,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Run registers the ArithmeticServiceServer to a grpcServer and serves on
-// the specified port
 func StartGrpcCalculatorServer() {
 
 	listen, err := net.Listen("tcp4", ":9000")

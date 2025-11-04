@@ -3,10 +3,12 @@ module practise
 go 1.25.1
 
 require (
+	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.10
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.0
+	modernc.org/sqlite v1.39.1
 )
 
 require (
@@ -26,5 +28,4 @@ require (
 	modernc.org/libc v1.66.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.39.1 // indirect
 )

@@ -1,4 +1,4 @@
-package problems
+package algorithms
 
 import (
 	"context"

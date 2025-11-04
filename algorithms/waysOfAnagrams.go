@@ -1,6 +1,4 @@
-package problems
-
-import algorithms "practise/algorithms"
+package algorithms
 
 func WaysOfAnagrams(source, target string) int {
 	// Total ways we could form target string from subset of source string
@@ -23,7 +21,7 @@ func WaysOfAnagrams(source, target string) int {
 			return 0
 		}
 
-		ways *= algorithms.Combination(sourceCount[ch], freq)
+		ways *= Combination(sourceCount[ch], freq)
 	}
 
 	return ways
