@@ -11,6 +11,13 @@ import (
 	"google.golang.org/grpc"
 )
 
+func StartGraphqlServer() {
+	handler := Handler()
+	http.Handle("/graphQl", handler)
+	log.Println("App serving on graphql server over address: http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
+}
+
 func StartGrpcCalculatorServer() {
 
 	listen, err := net.Listen("tcp4", ":9000")

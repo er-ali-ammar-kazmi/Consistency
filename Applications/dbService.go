@@ -2,8 +2,6 @@ package app
 
 import (
 	"fmt"
-	"net/http"
-	"practise/applications/util"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -58,6 +56,7 @@ func (r dbService) ConnectSqlite() {
 	conn.Exec("PRAGMA foreign_keys = ON;")
 	db := conn.Migrator()
 	// db.DropTable(&User{}, &Blog{}, &Address{}, &Role{}, "users_roles")
+	// time.Sleep(time.Second * 1)
 	// conn.AutoMigrate(&User{}, &Blog{}, &Address{}, &Role{})
 
 	if !db.HasTable(&User{}) {
@@ -147,9 +146,9 @@ func (r dbService) RetrieveBlog(id uint) (Blog, error) {
 	return record, nil
 }
 
-func (r dbService) RetrieveAllBlogs(req *http.Request) ([]Blog, error) {
+func (r dbService) RetrieveAllBlogs() ([]Blog, error) {
 	var records []Blog
-	result := DB.Scopes(util.Paginate(req)).Find(&records)
+	result := DB.Find(&records)
 	if result.Error != nil {
 		return records, result.Error
 	}
