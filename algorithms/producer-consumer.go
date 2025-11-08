@@ -3,6 +3,7 @@ package algorithms
 import (
 	"context"
 	"fmt"
+	"iter"
 	"math/rand/v2"
 	"sync"
 	"time"
@@ -57,4 +58,14 @@ func Consumer[T any](ctx context.Context, wg *sync.WaitGroup, stream <-chan T) {
 			}
 		}
 	})
+}
+
+func Iterator() iter.Seq[int] {
+	return func(yield func(int) bool) {
+		for {
+			if !yield(rand.IntN(118)) {
+				return
+			}
+		}
+	}
 }

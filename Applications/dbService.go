@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -45,38 +46,36 @@ func DbService() dbService {
 }
 
 func (r dbService) ConnectSqlite() {
+	defer fmt.Println("Connection with SqliteDataBase Initialized!")
+
 	conn, err := gorm.Open(sqlite.Dialector{
 		DriverName: "sqlite",
 		DSN:        "file:SqliteDataBase.db?cache=shared&mode=rwc"},
 		&gorm.Config{})
 	if err != nil {
 		fmt.Printf("Error: %v", err.Error())
+		os.Exit(1)
 	}
 
 	conn.Exec("PRAGMA foreign_keys = ON;")
-	db := conn.Migrator()
-	// db.DropTable(&User{}, &Blog{}, &Address{}, &Role{}, "users_roles")
-	// time.Sleep(time.Second * 1)
-	// conn.AutoMigrate(&User{}, &Blog{}, &Address{}, &Role{})
+	m := conn.Migrator()
 
-	if !db.HasTable(&User{}) {
-		db.CreateTable(&User{})
+	if !m.HasTable(&User{}) || !m.HasTable(&Role{}) {
+		m.CreateTable(&User{}, &Role{})
 	}
-	if !db.HasTable(&Blog{}) {
-		db.CreateTable(&Blog{})
+	if !m.HasTable(&Blog{}) {
+		m.CreateTable(&Blog{})
 	}
-	if !db.HasTable(&Address{}) {
-		db.CreateTable(&Address{})
-	}
-	if !db.HasTable(&Role{}) {
-		db.CreateTable(&Role{})
+	if !m.HasTable(&Address{}) {
+		m.CreateTable(&Address{})
 	}
 
 	DB = conn
-	fmt.Println("Connection with SqliteDataBase Initialized!")
 }
 
 func (r dbService) CloseSqlite() {
+	defer fmt.Println("Connection with SqliteDataBase Closed!")
+
 	if sqliteDb, err := DB.DB(); err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -84,7 +83,6 @@ func (r dbService) CloseSqlite() {
 			fmt.Println(err.Error())
 		}
 	}
-	fmt.Println("Connection with SqliteDataBase Closed!")
 }
 
 func (r dbService) InsertUser(record *User) (bool, error) {

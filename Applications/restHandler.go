@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"practise/applications/protobuf"
 
@@ -48,7 +47,7 @@ func (restService RestApp) GetAddition(w http.ResponseWriter, req *http.Request)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	log.Println("Request Processed:", result)
+	fmt.Println("Request Processed:", result)
 	w.Write(data)
 }
 
@@ -82,7 +81,7 @@ func (restService RestApp) GetSubtraction(w http.ResponseWriter, req *http.Reque
 		fmt.Fprintf(w, "Can't able to Marshal request Body %v", err.Error())
 		return
 	}
-	log.Println("Request Processed:", result)
+	fmt.Println("Request Processed:", result)
 	w.Write(data)
 }
 
@@ -116,7 +115,7 @@ func (restService RestApp) GetMultiplication(w http.ResponseWriter, req *http.Re
 		fmt.Fprintf(w, "Can't able to Marshal request Body %v", err.Error())
 		return
 	}
-	log.Println("Request Processed:", result)
+	fmt.Println("Request Processed:", result)
 	w.Write(data)
 }
 
@@ -150,6 +149,6 @@ func (restService RestApp) GetDivision(w http.ResponseWriter, req *http.Request)
 		fmt.Fprintf(w, "Can't able to Marshal request Body %v", err.Error())
 		return
 	}
-	log.Println("Request Processed:", result)
+	fmt.Println("Request Processed:", result)
 	w.Write(data)
 }
