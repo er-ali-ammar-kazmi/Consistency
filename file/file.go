@@ -2,6 +2,7 @@ package file
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -58,4 +59,42 @@ func ReadFromCsv() {
 	}
 
 	fmt.Println(m)
+}
+
+func WriteToJson() {
+	fmt.Println("Started Writing")
+	defer fmt.Println("Closing Writer")
+
+	file, err := os.Create("./file/state.json")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	m := map[string]string{"1": "One", "2": "Two", "3": "Three"}
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", " ")
+
+	encoder.Encode([]map[string]string{m})
+}
+
+func ReadFromJson() {
+	fmt.Println("Started Reading")
+	defer fmt.Println("Closing Reader")
+
+	file, err := os.Open("./file/state.json")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+
+	var v []map[string]string
+	decoder.Decode(&v)
+
+	fmt.Println(v)
 }
