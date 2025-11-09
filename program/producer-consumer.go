@@ -1,9 +1,8 @@
-package algorithms
+package program
 
 import (
 	"context"
 	"fmt"
-	"iter"
 	"math/rand/v2"
 	"sync"
 	"time"
@@ -23,7 +22,7 @@ func Start(d int) {
 	}
 
 	stream := Producer(ctx, &wg, fn)
-	Consumer(ctx, &wg, stream)
+	Consumer(&wg, stream)
 
 	wg.Wait()
 }
@@ -45,27 +44,11 @@ func Producer[T any](ctx context.Context, wg *sync.WaitGroup, fn func() T) <-cha
 	return stream
 }
 
-func Consumer[T any](ctx context.Context, wg *sync.WaitGroup, stream <-chan T) {
+func Consumer[T any](wg *sync.WaitGroup, stream <-chan T) {
 	(*wg).Go(func() {
-		for {
-			select {
-			case <-ctx.Done():
-				fmt.Println()
-				fmt.Println("Consumer Closing : ", ctx.Err().Error())
-				return
-			case num := <-stream:
-				fmt.Print(num, " ")
-			}
+		for num := range stream {
+			fmt.Print(num, " ")
 		}
+		fmt.Println("Consumer Closing!")
 	})
-}
-
-func Iterator() iter.Seq[int] {
-	return func(yield func(int) bool) {
-		for {
-			if !yield(rand.IntN(118)) {
-				return
-			}
-		}
-	}
 }

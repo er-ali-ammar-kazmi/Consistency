@@ -1,11 +1,14 @@
-package algorithms
+package program
 
 import "maps"
 
-func Anagrams(string1, string2 string) bool {
+func IsAnagrams(string1, string2 string) bool {
 	// silent == listen
 	if len(string1) != len(string2) {
 		return false
+	}
+	if string1 == string2 {
+		return true
 	}
 
 	string1Count := map[rune]int{}

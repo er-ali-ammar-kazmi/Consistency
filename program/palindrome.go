@@ -1,4 +1,4 @@
-package algorithms
+package program
 
 func IsStrPalindrome(input string) bool {
 	endPointer := len(input) - 1

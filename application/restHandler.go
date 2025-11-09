@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"practise/applications/protobuf"
+	"practise/application/protobuf"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )

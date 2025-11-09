@@ -1,4 +1,4 @@
-package algorithms
+package program
 
 func WaysOfAnagrams(source, target string) int {
 	// Total ways we could form target string from subset of source string

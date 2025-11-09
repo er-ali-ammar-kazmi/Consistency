@@ -1,4 +1,4 @@
-package algorithms
+package program
 
 func Fact(num int) int {
 	// n! = n * n-1 * ...1

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	protobuf "practise/applications/protobuf"
+	protobuf "practise/application/protobuf"
 	"time"
 
 	"google.golang.org/grpc"
