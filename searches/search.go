@@ -24,7 +24,7 @@ func BinarySearch(arr []int, target int) (int, bool) {
 
 	for left <= right {
 		mid = (left + right) / 2
-		fmt.Println(left, right, mid)
+		fmt.Println(left, mid, right)
 
 		if arr[mid] == target {
 			return mid, true
