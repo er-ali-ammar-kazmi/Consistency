@@ -3,12 +3,13 @@ package sorting
 import "fmt"
 
 func BubbleSort(arr []int) {
+	fmt.Println(arr)
 	for i, _ := range arr {
 		swapped := false
 		count := 0
-		for idx := 0; idx < len(arr)-i-1; idx++ {
-			if arr[idx] > arr[idx+1] {
-				arr[idx], arr[idx+1] = arr[idx+1], arr[idx]
+		for j := 0; j < len(arr)-i-1; j++ {
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
 				swapped = true
 			}
 			count++
@@ -18,4 +19,5 @@ func BubbleSort(arr []int) {
 			break
 		}
 	}
+	fmt.Println(arr)
 }
