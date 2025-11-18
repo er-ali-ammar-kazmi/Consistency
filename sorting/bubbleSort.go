@@ -2,8 +2,10 @@ package sorting
 
 import "fmt"
 
+// O(n2)
 func BubbleSort(arr []int) {
 	fmt.Println(arr)
+
 	for i, _ := range arr {
 		swapped := false
 		count := 0
@@ -19,5 +21,6 @@ func BubbleSort(arr []int) {
 			break
 		}
 	}
+
 	fmt.Println(arr)
 }

@@ -2,8 +2,10 @@ package sorting
 
 import "fmt"
 
+// O(n2)
 func SelectionSort(arr []int) {
 	fmt.Println(arr)
+
 	for i, _ := range arr {
 		count := 0
 		minIndex := i
@@ -18,5 +20,6 @@ func SelectionSort(arr []int) {
 			arr[i], arr[minIndex] = arr[minIndex], arr[i]
 		}
 	}
+
 	fmt.Println(arr)
 }
