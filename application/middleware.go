@@ -1,7 +1,9 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -18,17 +20,38 @@ type middleware struct {
 
 func (mdlwr middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().Format("2006-01-02 15:04:05")
-	cookie, err := r.Cookie("auth")
-	if err != nil {
-		fmt.Fprintf(w, "No validation mechanism provided, jwt token missing!")
+	if r.Method == "POST" && strings.Contains(r.URL.RawPath, "login") {
+		bodyByte, err := io.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		var user User
+		json.Unmarshal(bodyByte, &user)
+
+		auth := NewToken(user)
+		cookie := http.Cookie{
+			Name:     "auth",
+			Value:    auth,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		}
+
+		http.SetCookie(w, &cookie)
+	} else {
+		cookie, err := r.Cookie("auth")
+		if err != nil {
+			fmt.Fprintf(w, "No validation mechanism provided, jwt token missing!")
+		}
+		tokenString := cookie.Raw
+		claims, err := ValidateToken(tokenString)
+		if err != nil {
+			fmt.Fprintf(w, "Validation mechanism failed, wrong jwt token!")
+		}
+		email := claims["user_email"]
+		mdlwr.logger.WriteString(fmt.Sprintf("%v : %s[%s] - %s\n", now, r.Method, email, r.URL))
 	}
-	tokenString := cookie.Raw
-	claims, err := ValidateToken(tokenString)
-	if err != nil {
-		fmt.Fprintf(w, "Validation mechanism failed, wrong jwt token!")
-	}
-	email := claims["user_email"]
-	mdlwr.logger.WriteString(fmt.Sprintf("%v : %s[%s] - %s\n", now, r.Method, email, r.URL))
 	mdlwr.handler.ServeHTTP(w, r)
 }
 
