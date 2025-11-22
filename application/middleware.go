@@ -1,9 +1,7 @@
 package app
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -20,39 +18,29 @@ type middleware struct {
 
 func (mdlwr middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().Format("2006-01-02 15:04:05")
-	if r.Method == "POST" && strings.Contains(r.URL.RawPath, "login") {
-		bodyByte, err := io.ReadAll(r.Body)
+	if r.Method == http.MethodPost && strings.Contains(r.URL.Path, "login") {
+	} else if r.Method == http.MethodGet {
+		cookie, err := r.Cookie("jwt_token")
 		if err != nil {
-			fmt.Println(err.Error())
-		}
-		var user User
-		json.Unmarshal(bodyByte, &user)
-
-		auth := NewToken(user)
-		cookie := http.Cookie{
-			Name:     "auth",
-			Value:    auth,
-			Path:     "/",
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteLaxMode,
+			fmt.Fprintf(w, "No validation mechanism provided, jwt_token missing!")
+			return
 		}
 
-		http.SetCookie(w, &cookie)
-	} else {
-		cookie, err := r.Cookie("auth")
-		if err != nil {
-			fmt.Fprintf(w, "No validation mechanism provided, jwt token missing!")
-		}
-		tokenString := cookie.Raw
+		tokenString := cookie.Value
 		claims, err := ValidateToken(tokenString)
 		if err != nil {
 			fmt.Fprintf(w, "Validation mechanism failed, wrong jwt token!")
+			return
 		}
+
 		email := claims["user_email"]
-		mdlwr.logger.WriteString(fmt.Sprintf("%v : %s[%s] - %s\n", now, r.Method, email, r.URL))
+		mdlwr.logger.WriteString(fmt.Sprintf("%v : %s[%s] - %s\n", now, r.Method, email, r.URL.Path))
+	} else {
+		fmt.Fprintf(w, "either wrong method type or wrong URI, please check!")
+		return
 	}
 	mdlwr.handler.ServeHTTP(w, r)
+
 }
 
 func NewMiddleWare(mx *http.ServeMux) *middleware {
@@ -66,21 +54,21 @@ func NewMiddleWare(mx *http.ServeMux) *middleware {
 		handler: mx}
 }
 
-func NewToken(user User) string {
+func NewToken(user User) (any, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":    user.Id,
 		"user_email": user.Email,
-		"exp":        time.Now().Add(time.Hour * 2).Unix(),
+		"expiry":     time.Now().Add(time.Hour * 2).Unix(),
 	})
 
 	secret := os.Getenv("SECRET")
 	auth, err := token.SignedString([]byte(secret))
 	if err != nil {
-		log.Fatalln(err.Error())
+		return nil, err
 	}
-	fmt.Println(auth)
-	return auth
+
+	return auth, nil
 }
 
 func ValidateToken(tokenString string) (map[string]any, error) {

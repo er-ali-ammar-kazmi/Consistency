@@ -41,6 +41,7 @@ func StartRestCalculatorServer() {
 	mux := http.NewServeMux()
 	muxWithMiddleWare := NewMiddleWare(mux)
 
+	mux.HandleFunc("/login", restApp.Login)
 	mux.HandleFunc("/GetAddition", restApp.GetAddition)
 	mux.HandleFunc("/GetSubtraction", restApp.GetSubtraction)
 	mux.HandleFunc("/GetMultiplication", restApp.GetMultiplication)

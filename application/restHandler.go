@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,6 +16,38 @@ type RestApp struct {
 
 func NewRestApp() *RestApp {
 	return &RestApp{calci: NewCalculator()}
+}
+
+func (restService RestApp) Login(w http.ResponseWriter, req *http.Request) {
+
+	bodyByte, err := io.ReadAll(req.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Can't able to read request Body %v", err.Error())
+		return
+	}
+
+	var user User
+	if err := json.Unmarshal(bodyByte, &user); err != nil {
+		fmt.Fprintf(w, "Can't able to Unmarshal request Body %v", err.Error())
+		return
+	}
+
+	auth, err := NewToken(user)
+	if err != nil {
+		fmt.Fprintf(w, "Can't able to generate token %v", err.Error())
+		return
+	}
+
+	cookie := http.Cookie{
+		Name:     "jwt_token",
+		Value:    auth.(string),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	http.SetCookie(w, &cookie)
 }
 
 func (restService RestApp) GetAddition(w http.ResponseWriter, req *http.Request) {
