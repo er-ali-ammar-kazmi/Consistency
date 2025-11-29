@@ -26,3 +26,15 @@ func SumOfTwos(nums []int, target int) {
 		}
 	}
 }
+
+func CheckDuplicate(input string) bool {
+	dict := map[rune]struct{}{}
+	for _, num := range input {
+		if _, ok := dict[num]; ok {
+			return ok
+		} else {
+			dict[num] = struct{}{}
+		}
+	}
+	return false
+}
