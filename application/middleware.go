@@ -51,7 +51,6 @@ func (mdlwr middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Too many requests!"})
 		return
 	}
-
 }
 
 func NewMiddleWare(mx *http.ServeMux) *middleware {
