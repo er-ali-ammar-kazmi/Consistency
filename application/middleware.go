@@ -1,14 +1,18 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/time/rate"
 )
 
 type middleware struct {
@@ -39,7 +43,14 @@ func (mdlwr middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "either wrong method type or wrong URI, please check!")
 		return
 	}
-	mdlwr.handler.ServeHTTP(w, r)
+	rateLimiter := RateLimiter(r)
+	if rateLimiter.Allow() {
+		mdlwr.handler.ServeHTTP(w, r)
+	} else {
+		w.Header().Set("Content-Type", "Application/Json")
+		json.NewEncoder(w).Encode(map[string]string{"error": "Too many requests!"})
+		return
+	}
 
 }
 
@@ -92,4 +103,21 @@ func ValidateToken(tokenString string) (map[string]any, error) {
 		return claims, nil
 	}
 	return nil, fmt.Errorf("%s", "error Occured at jwt token validation")
+}
+
+func RateLimiter(r *http.Request) rate.Limiter {
+	limit := rate.Limit(2)
+	burst := 10
+	ipMap := sync.Map{}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		fmt.Println(err)
+	}
+	limiter, exists := ipMap.Load(host)
+	if !exists {
+		limiter = rate.NewLimiter(limit, burst)
+		ipMap.Store(host, limiter)
+	}
+	ratelimiter, _ := limiter.(rate.Limiter)
+	return ratelimiter
 }
