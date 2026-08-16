@@ -1,11 +1,11 @@
 package app
 
 import (
+	"consistency/application/protobuf"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"practise/application/protobuf"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )

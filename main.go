@@ -1,9 +1,15 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
+	"consistency/program"
+	"fmt"
+
+	env "github.com/joho/godotenv"
 )
 
 func main() {
-	godotenv.Load()
+	env.Load()
+
+	fmt.Println("Hello World")
+	program.DaisyChain()
 }

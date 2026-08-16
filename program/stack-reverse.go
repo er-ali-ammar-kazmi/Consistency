@@ -1,6 +1,6 @@
 package program
 
-import "practise/structure"
+import "consistency/structure"
 
 func StackReverse[T any](stack *structure.Stack[T]) {
 	if stack.IsEmpty() {
