@@ -1,19 +1,16 @@
 package search
 
-import "fmt"
+import (
+	"cmp"
+	"fmt"
+)
 
-func BinarySearch(arr []int, target int) (int, bool) {
-	fmt.Println(arr, target)
-	if target > arr[len(arr)-1] {
-		return -1, false
-	}
-
+func BinarySearch[T cmp.Ordered](arr []T, target T) (int, bool) {
 	var left, mid, right = 0, 0, len(arr) - 1
 
 	for left <= right {
 		mid = (left + right) / 2
-		fmt.Println(left, mid, right)
-
+		fmt.Println(mid)
 		if arr[mid] == target {
 			return mid, true
 		}
@@ -24,5 +21,5 @@ func BinarySearch(arr []int, target int) (int, bool) {
 			left = mid + 1
 		}
 	}
-	return mid, false
+	return -1, false
 }
