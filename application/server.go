@@ -1,12 +1,13 @@
 package app
 
 import (
-	protobuf "consistency/application/protobuf"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"time"
+
+	protobuf "practise.com/consistency/application/protobuf"
 
 	"google.golang.org/grpc"
 )

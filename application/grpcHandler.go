@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	protobuf "consistency/application/protobuf"
+	protobuf "practise.com/consistency/application/protobuf"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
