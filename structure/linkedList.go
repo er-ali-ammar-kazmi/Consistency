@@ -18,51 +18,50 @@ func NewList[T any]() List[T] {
 }
 
 func (l *List[T]) Push(val T) {
-	tmp := l.Header
-	for {
-		if tmp == nil {
-			tmp = &Node[T]{
-				Node:  nil,
-				Value: val,
-			}
-			l.Footer, l.Header = tmp, tmp
-			return
-		} else if tmp.Node == nil {
-			tmp.Node = &Node[T]{
-				Node:  nil,
-				Value: val,
-			}
-			l.Footer = tmp.Node
-			return
+	tmp := l.Footer
+	if tmp == nil {
+		tmp = &Node[T]{
+			Node:  nil,
+			Value: val,
 		}
-		tmp = tmp.Node
+		l.Footer, l.Header = tmp, tmp
+	} else if tmp.Node == nil {
+		tmp.Node = &Node[T]{
+			Node:  nil,
+			Value: val,
+		}
+		l.Footer = tmp.Node
 	}
 }
 
 func (l *List[T]) Pop() {
-	var last, tmp *Node[T]
+	var tmp *Node[T]
 	if l.Header == nil {
 		fmt.Println("No Element")
-		return
+		goto x
 	} else if l.Header.Node == nil {
 		l.Header = nil
 		l.Footer = nil
 		fmt.Println("Only one Element")
-		return
+		goto x
 	} else {
-		last = l.Header
-		tmp = l.Header.Node
+		tmp = l.Header
 	}
 
 	for tmp.Node != nil {
-		last = tmp
+		if tmp.Node == l.Footer {
+			l.Footer = tmp
+			tmp.Node = nil
+			goto x
+		}
 		tmp = tmp.Node
 	}
-	last.Node = nil
+x:
+	return
 }
 
 func (l *List[T]) Print() {
-	var tmp *Node[T] = l.Header
+	var tmp = l.Header
 	for tmp != nil {
 		fmt.Print(tmp.Value, " ")
 		tmp = tmp.Node
