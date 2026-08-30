@@ -1,25 +1,23 @@
 package sorting
 
-import "fmt"
+import (
+	"cmp"
+)
 
 // O(n2)
-func SelectionSort(arr []int) {
-	fmt.Println(arr)
+func SelectionSort[T cmp.Ordered](arr *[]T) {
 
-	for i, _ := range arr {
+	for i, _ := range *arr {
 		count := 0
 		minIndex := i
-		for j := i + 1; j < len(arr); j++ {
-			if arr[j] < arr[minIndex] {
+		for j := i + 1; j < len(*arr); j++ {
+			if (*arr)[j] < (*arr)[minIndex] {
 				minIndex = j
 			}
 			count++
 		}
-		fmt.Println(arr, count)
 		if minIndex != i {
-			arr[i], arr[minIndex] = arr[minIndex], arr[i]
+			(*arr)[i], (*arr)[minIndex] = (*arr)[minIndex], (*arr)[i]
 		}
 	}
-
-	fmt.Println(arr)
 }
