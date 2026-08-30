@@ -1,9 +1,11 @@
 package sorting
 
-import "fmt"
+import (
+	"cmp"
+)
 
 // O(nlogn)
-func MergeSort(arr []int) []int {
+func MergeSort[T cmp.Ordered](arr []T) []T {
 	if len(arr) <= 1 {
 		return arr
 	}
@@ -16,8 +18,8 @@ func MergeSort(arr []int) []int {
 	return merge(left, right)
 }
 
-func merge(left, right []int) []int {
-	result := make([]int, 0)
+func merge[T cmp.Ordered](left, right []T) []T {
+	result := make([]T, 0, len(left)+len(right))
 
 	var i, j int
 	for i < len(left) && j < len(right) {
@@ -31,6 +33,5 @@ func merge(left, right []int) []int {
 	}
 	result = append(result, left[i:]...)
 	result = append(result, right[j:]...)
-	fmt.Println(result)
 	return result
 }
