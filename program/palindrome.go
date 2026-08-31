@@ -1,24 +1,14 @@
 package program
 
 func IsStrPalindrome(input string) bool {
-	endPointer := len(input) - 1
-	flag := true
-	if endPointer < 0 {
-		return false
+	var reverse string
+	for _, str := range input {
+		reverse = string(str) + reverse
 	}
-	for idx, str := range input {
-		if endPointer <= idx {
-			break
-		}
-		if str == rune(input[endPointer]) {
-			endPointer--
-			continue
-		} else {
-			flag = false
-			break
-		}
+	if input == reverse {
+		return true
 	}
-	return flag
+	return false
 }
 
 func IsIntPalindrome(input int) bool {
